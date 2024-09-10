@@ -6,6 +6,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
+            max-width: 200px;
         }
     </style>
 </head>
@@ -15,19 +16,38 @@
     <h2>Overview</h2>
     <p>
         The goal of project 1 is to convert images taken with 3 separate color 
-        channels taken by Prokudin-Gorskii in the 20th century
-        into a singular rgb color image with minimal leftover issues
-        from converting several different images into one. Because the images
-        were taken before color photos could be taken, they take the form
-        of 3 separate images that need to be aligned and cleaned up with
-        various computer vision techniques to convert them into modern
+        channels taken by Prokudin-Gorskii in the 20th century 
+        into a singular rgb color image with minimal leftover issues 
+        from converting several different images into one. Because the images 
+        were taken before color photos could be taken, they take the form 
+        of 3 separate images that need to be aligned and cleaned up with 
+        various computer vision techniques to convert them into modern 
         color images.
     </p>
-    <h2>
-        
-    </h2>
+    <h2>Alignment</h2>
+    <h3>Splitting</h3>
     <p>
-
+        Most of the images are split in one way. First, the original image is loaded 
+        from the file. Then, this original image is cropped by two-thirds of a percent 
+        on each side. After that, the separate channel images are split apart by taking 
+        the first third, second third, and last third of the original image and assigning 
+        them to blue, green, and red respectively. This channel images are then cropped 
+        by five percent on each side to obtain the final blue, green, and red channel images.
+    </p>
+    <p>
+        There is one exception to this. The cathedral image isn't cropped at all before being
+        aligned. This is the original method I used for all the jpg images, but I found that
+        this caused issues for the monastery image so I stuck with the method I used for tif
+        images for all of the images except the cathedral image, where cropping caused issues 
+        instead. As such, the cathedral image is the sole image that does not get cropped before
+        alignment. Margins are instead removed after processing, which is already done anyways
+        for all the jpg images.
+    </p>
+    <h3>Aligning</h3>
+    <p>
+        The channels are aligned by finding the L2 norm, also known as the 
+        Euclidian Distance, of the red and blue images individually with the green 
+        image. In the case of the .jpg images, different paddings are applied to the 
     </p>
 </body>
 </html>
