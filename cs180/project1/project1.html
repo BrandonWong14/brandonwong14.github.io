@@ -6,7 +6,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            max-width: 600px;
+            max-width: 1000px;
         }
     </style>
 </head>
@@ -49,14 +49,32 @@
         of the red and blue images individually with the green image.
     </p>
     <p>
-        In the case of the .jpg images, different paddings are applied to the red and blue images 
+        In the case of the .jpg images, different paddings using np.pad are applied to the red and blue images 
         before their Euclidean Distance with the green image is found. The paddings that result 
         in the smallest L2 norm are the ones selected to be used in the final alignment, and then 
         the margins are removed from the final image to keep just the aligned parts in the final 
         result.
     </p>
     <p>
-        In the case of the .tif images, 
+        In the case of the .tif images, pyramid alignment was used with rolling instead of padding 
+        the images. Using np.roll, the optimal alignments based on the L2 norm first on images 1/64 of the original size, 
+        then on images 1/16 of the original size and aligned based on the result from the 1/64 size 
+        alignment, then on images 1/4 of the size based on the results from the 1/64 and 1/16 alignments 
+        are found and applied to the original image to ensure the optimal alignments for the red and blue 
+        images with the green image can be found in a timely manner. Trying to find the alignment with the optimal 
+        L2 norm on the images at full size and half size were found to take to long to be reasonable, while 
+        using all three smaller sizes takes at most five minutes total per alignment. By basing the final alignment 
+        based on the total results from the three smaller ones, and optimal point can be found within a reasonable 
+        time frame for each image with no noticeable off alignments the majority of the time.
+    </p>
+    <h2>Issues</h2>
+    <p>
+        While most images ended up aligning perfectly, a small number of images were still off after the alignments were 
+        done. The most distinctly off images were the train and self_portrait images. The emir and lady images were also 
+        off, but to a lesser extent that isn't as distinct as the first two.
+    </p>
+    <p>
+        I believe these issues stem from
     </p>
 </body>
 </html>
