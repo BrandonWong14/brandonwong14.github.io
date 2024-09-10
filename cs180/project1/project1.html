@@ -6,7 +6,7 @@
         body {
             font-family: Arial, sans-serif;
             margin: 20px;
-            max-width: 200px;
+            max-width: 600px;
         }
     </style>
 </head>
@@ -36,8 +36,8 @@
     </p>
     <p>
         There is one exception to this. The cathedral image isn't cropped at all before being
-        aligned. This is the original method I used for all the jpg images, but I found that
-        this caused issues for the monastery image so I stuck with the method I used for tif
+        aligned. This is the original method I used for all the .jpg images, but I found that
+        this caused issues for the monastery image so I stuck with the method I used for .tif
         images for all of the images except the cathedral image, where cropping caused issues 
         instead. As such, the cathedral image is the sole image that does not get cropped before
         alignment. Margins are instead removed after processing, which is already done anyways
@@ -45,9 +45,18 @@
     </p>
     <h3>Aligning</h3>
     <p>
-        The channels are aligned by finding the L2 norm, also known as the 
-        Euclidian Distance, of the red and blue images individually with the green 
-        image. In the case of the .jpg images, different paddings are applied to the 
+        The channels are aligned by finding the L2 norm, also known as the Euclidian Distance, 
+        of the red and blue images individually with the green image.
+    </p>
+    <p>
+        In the case of the .jpg images, different paddings are applied to the red and blue images 
+        before their Euclidean Distance with the green image is found. The paddings that result 
+        in the smallest L2 norm are the ones selected to be used in the final alignment, and then 
+        the margins are removed from the final image to keep just the aligned parts in the final 
+        result.
+    </p>
+    <p>
+        In the case of the .tif images, 
     </p>
 </body>
 </html>
