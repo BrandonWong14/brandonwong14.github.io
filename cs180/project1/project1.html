@@ -8,6 +8,10 @@
             margin: 20px;
             max-width: 1000px;
         }
+        .column {
+            float: left;
+            width: 50%;
+        }
     </style>
 </head>
 <body>
@@ -74,7 +78,38 @@
         off, but to a lesser extent that isn't as distinct as the first two.
     </p>
     <p>
-        I believe these issues stem from
+        I believe these issues stem primarily from the alignment being unable to reach the precision needed to avoid being 
+        slightly off on images with fewer issues. Because even the highest level of precision in still as a four times 
+        reduced size, being slightly off should not be too unexpected. This may be the issue for the images that are more 
+        disticntly wrong as well, except in a slightly different way. In their cases, the alignment goes too far on the smaller 
+        sizes, and when they move up to the larger sizes, the alignment rolling no longer has the range to find the true optimal 
+        point, as the smaller sizes adjust the images by four times as much as the next size up. This results in alignments 
+        that prevent the final one from ever finding the true optimal value, ending up with final images that are way off.
+    </p>
+    <h2>Images</h2>
+    <p>
+        <div class="column">
+            <img src="./media/cathedral.jpg">
+            Red Offset : 
+            Blue Offset : 
+        </div>
+        <div class="column">
+            <img src="./media/church.jpg">
+            Red Offset : 
+            Blue Offset : 
+        </div>
+    </p>
+    <p>
+        <div class="column">
+            <img src="./media/emir.jpg">
+            Red Offset : 
+            Blue Offset : 
+        </div>
+        <div class="column">
+            <img src="./media/harvesters.jpg">
+            Red Offset : 
+            Blue Offset : 
+        </div>
     </p>
 </body>
 </html>
