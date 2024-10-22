@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS 180 Project 3</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1000px;
+        }
+        .one_column {
+            float: left;
+            width: 100%;
+        }
+        .two_column {
+            float: left;
+            width: 50%;
+        }
+        .three_column {
+            float: left;
+            width: 33.3%;
+        }
+        .five_column {
+            float: left;
+            width: 20%;
+        }
+        .six_column {
+            float: left;
+            width: 16.6%;
+        }
+        .single {
+            width: 600px;
+        }
+        .normal {
+            width: 400px;
+        }
+        .standard {
+            width: 240px;
+        }
+        .small {
+            width: 180px;
+        }
+        .tiny {
+            width: 140px;
+        }
+    </style>
+</head>
+<body>
+    <h1>CS 180 Project 4</h1>
+    <p>Name: Brandon Wong</p>
+    <h2>Part 4A: Image Warping and Mosiacing</h2>
+    <p>
+        The goal of Project 4a is to warp images so that they can be stiched together into a single larger image with a single perspective. 
+        The first results of this part uses the described methods to rectify images, essentially converting images so that a part that should be a 
+        rectangle is displayed as one, warping the entire images so that it looks like its from the right perspective to see the rectangle as one 
+        correctly in the image. The second part warps images which are then manually aligned into a larger image.
+    </p>
+    <h3>Shoot and Digitize Pictures</h3>
+    <h4>For Rectification</h4>
+    <p>
+        <div class="two_column">
+            <img src="./media/box.jpg" alt="box" class="normal">
+            <p>Box</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/computer.jpg" alt="computer" class="normal">
+            <p>Computer</p>
+        </div>
+    </p>
+    <h4>For Mosiacing</h4>
+    <p>
+        <div class="two_column">
+            <img src="./media/path_left.jpg" alt="path_left" class="normal">
+            <p>Path Left</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/path_right.jpg" alt="path_right" class="normal">
+            <p>Path Right</p>
+        </div>
+    </p>
+    <p>
+        <div class="two_column">
+            <img src="./media/dish_left.jpg" alt="dish_left" class="normal">
+            <p>Dishrack Left</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/dish_right.jpg" alt="dish_right" class="normal">
+            <p>Dishrack Right</p>
+        </div>
+    </p>
+    <p>
+        <div class="two_column">
+            <img src="./media/split_left.jpg" alt="split_left" class="normal">
+            <p>Split Path Left</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/split_right.jpg" alt="split_right" class="normal">
+            <p>Split Path Right</p>
+        </div>
+    </p>
+    <h3>Recover Homographies</h3>
+    <p>
+        To recover homographies, corresponding points were marked on the right and left images. For the images for rectification, the points that should be in a rectange 
+        were marked and than the rectanglular location of the points were manually input. This was done using the labeling tool given in the project spec linked 
+        <a href="https://cal-cs180.github.io/fa23/hw/proj3/tool.html">here</a>. Once the points were obtained, the homographies were computed using the least squared 
+        linear algebra function from numpy on the system of equations recovered from the matrix equation used to calculate homographies shown below. Inverse warping was then used 
+        by taking the inverse of the homography matrix and using that to calculate new warped images.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/homography_eqs.png" alt="homography_eqs" class="normal">
+            <p>Homography Calculation Equation for Least Squares</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/homography_std.png" alt="homography_std" class="small">
+            <p>Homography Equation Standard Form</p>
+        </div>
+    </p>
+    <h3>Warp the Images</h3>
+    <h4>Corresponding Points</h4>
+    <p>
+        <div class="two_column">
+            <img src="./media/box_with_points.jpg" alt="box_with_points" class="normal">
+            <p>Box Points</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/computer_with_pts.jpg" alt="computer_with_pts" class="normal">
+            <p>Computer Points</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/path_with_pts.jpg" alt="path_with_pts" class="single">
+            <p>Path Points</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/dish_with_pts.jpg" alt="dish_with_points" class="single">
+            <p>Dish Points</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/split_with_pts.jpg" alt="split_with_points" class="single">
+            <p>Split Path Points</p>
+        </div>
+    </p>
+    <h4>Image Rectification</h4>
+    <p>
+        To rectify images, the homography matrix for inverse warping was found, then the warp function made in the previous project was used to warp 
+        the old image into the new image with linear interpolation. There was a weird result where the box became super zoomed out due to stretching.
+    </p>
+    <p>
+        <div class="two_column">
+            <img src="./media/box_rectified.jpg" alt="box_rectified" class="normal">
+            <p>Box Rectified</p>
+        </div>
+        <div class="two_column">
+            <img src="./media/box_rectified_zoom.jpg" alt="box_rectified_zoom" class="normal">
+            <p>Box Rectified, Zoomed In</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./media/computer_rectified.jpg" alt="computer_rectified" class="single">
+            <p>Computer Rectified</p>
+        </div>
+    </p>
+    <h4>Blend the Images into a Mosiac</h4>
+    <p>
+        To create mosiacs, steps similar to the previous one were done. However, because the right side of the left image corresponds to the left side of the right image, 
+        the right corresponding points had to be shifted to ensure the full left image would be kept when warped. After that, the homographies could be calculated using those corresponding 
+        points. After that, the images could be put together onto a single larger image for a displayable combined result. To help remove some of the distinction between images as a 
+        result of differing brightness levels, multiresolution laplacian pyramid blending was used with the mask on the right image. The two images input were the warped left image and 
+        the combined image to prevent the black background on the rest of the image from causing issues in the blending. This helped slightly with the results.
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./media/path_left_warped.jpg" alt="path_left_warped" class="standard">
+            <p>Path Left Warped</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/path_mosiac.jpg" alt="path_mosiac" class="standard">
+            <p>Path Mosiac, No Blending</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/path_blended_mosiac.jpg" alt="path_blended_mosiac" class="standard">
+            <p>Blended Path Mosiac</p>
+        </div>
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./media/dish_left_warped.jpg" alt="dish_left_warped" class="standard">
+            <p>Dishrack Left Warped</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/dish_mosiac.jpg" alt="dish_mosiac" class="standard">
+            <p>Dishrack Mosiac, No Blending</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/dish_blended_mosiac.jpg" alt="dish_blended_mosiac" class="standard">
+            <p>Dishrack Path Mosiac</p>
+        </div>
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./media/split_left_warped.jpg" alt="split_left_warped" class="standard">
+            <p>Split Path Left Warped</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/split_mosiac.jpg" alt="split_mosiac" class="standard">
+            <p>Split Path Mosiac, No Blending</p>
+        </div>
+        <div class="three_column">
+            <img src="./media/split_blended_mosiac.jpg" alt="split_blended_mosiac" class="standard">
+            <p>Split Path Path Mosiac</p>
+        </div>
+    </p>
