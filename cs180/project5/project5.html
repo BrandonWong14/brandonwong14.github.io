@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS 180 Project 5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1000px;
+        }
+        .one_column {
+            float: left;
+            width: 100%;
+            height: 270px;
+        }
+        .two_column {
+            float: left;
+            width: 50%;
+            height: 360px;
+        }
+        .three_column {
+            float: left;
+            width: 33.3%;
+            height: 360px;
+        }
+        .four_column {
+            float: left;
+            width: 25%;
+            height: 300px;
+        }
+        .five_column {
+            float: left;
+            width: 20%;
+        }
+        .six_column {
+            float: left;
+            width: 16.6%;
+        }
+        .seven_column {
+            float: left;
+            width: 14.28%;
+        }
+        .eight_column {
+            float: left;
+            width: 12.5%;
+        }
+        .large {
+            width: 300px;
+        }
+        .medium {
+            width: 240px;
+        }
+        .small {
+            width: 180px;
+        }
+        .tiny {
+            width: 140px;
+        }
+        .wide {
+            width: 500px;
+        }
+        .standard {
+            width: 95%;
+        }
+    </style>
+</head>
+<body>
+    <h1>CS 180 Project 5</h1>
+    <p>Name: Brandon Wong</p>
+    <h2>Part A: The Power of Diffusion Models!</h2>
+    <p>
+        The purpose of project 5A is to get familiar with the usage of diffusion models by 
+        implementing diffusion sampling loops and using them for other tasks such as inpainting and creating optical illusions. 
+        This was done using the stages 1 and 2 of the DeepFloydIF diffusion model. Before each time results were obtained, a seed was set. This part was 
+        done in Colab. The unet instance from stage 1 was used for most sections, although section 0 looked at examples with different numbers 
+        of inference steps.
+    </p>
+
+    <h3>0 | Setup</h3>
+    <p>
+        This section was mainly just looking at results from the DeepFloydIF diffusion model as a point of comparison as an example of what 
+        is partially being implemented throughout the rest of this project. Results at 1 , 5, 10, 20, 40, and 100 inference steps (in stage 1) were observed, 
+        shown below. The seed used to ensure reproduceability was 714. Some results of adding different numbers of steps in stage 2 were 
+        also looked at (not shown), but as stage 2 is just upscaling from the results of stage 1 it really only affected image clearness and quality.
+        Increasing the number of inference steps increased the general reasonables of the image, although improvements really started decreasing at around 10 steps.
+        It was interesting to see how later steps moved in the direction of art rather than attempt to be realistic.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/0steps.png" alt="1steps" class="wide">
+            <p>1 Inference Step</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/5steps.png" alt="5steps" class="wide">
+            <p>5 Inference Steps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/10steps.png" alt="10steps" class="wide">
+            <p>10 Inference Steps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/20steps.png" alt="20steps" class="wide">
+            <p>20 Inference Steps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/40steps.png" alt="40steps" class="wide">
+            <p>40 Inference Steps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/100steps.png" alt="100steps" class="wide">
+            <p>100 Inference Steps</p>
+        </div>
+    </p>
+
+    <h3>1 | Implementing the Forward Process</h3>
+    <p>
+        In this section, I implemented a forwarding function to add noise at different timesteps based on the alpha values at 
+        different timesteps selected by the DeepFloydIF model. The equation to calculate x_t, the image at different timesteps, 
+        is shown below. Examples of an image with noise added at timesteps 250, 500, and 750 are also shown below alongside the 
+        original image without noise.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/forwardingprocess.png" alt="forwarding process" class="wide">
+            <p>Forwarding Process Definition and Equivalent Equation</p>
+        </div>
+    </p>
+    <p>
+        <div class="four_column">
+            <img src="./mediaA/campanile_64.jpg" alt="campanile" class="standard">
+            <p>64x64 Image of the Campanile</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/campanile_250.png" alt="step 250" class="standard">
+            <p>Noise at Step 250</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/campanile_500.png" alt="step 500" class="standard">
+            <p>Noise at Step 500</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/campanile_750.png" alt="step 750" class="standard">
+            <p>Noise at Step 750</p>
+        </div>
+    </p>
+
+    <h3>2 | Classical Denoising</h3>
+    <p>
+        Once the forwarding results at the three timesteps were obtained, I used gaussian blur filtering to see what those results 
+        would look like, shown below.
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./mediaA/campanile_250_blur.png" alt="step 250 blur" class="standard">
+            <p>Blur at Step 250</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/campanile_500_blur.png" alt="step 500 blur" class="standard">
+            <p>Blur at Step 500</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/campanile_750_blur.png" alt="step 750 blur" class="standard">
+            <p>Blur at Step 750</p>
+        </div>
+    </p>
+
+    <h3>3 | One-Step Denoising</h3>
+    <p>
+        The use of a pretrained UNet model for denoising was also used to see what those results would look like if noise was reduced 
+        in one step.
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./mediaA/unet_250.png" alt="step 250 unet" class="standard">
+            <p>UNet One Step at Step 250</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/unet_500.png" alt="step 500 unet" class="standard">
+            <p>UNet One Step at Step 500</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/unet_750.png" alt="step 750 unet" class="standard">
+            <p>UNet One Step at Step 750</p>
+        </div>
+    </p>
+
+    <h3>4 | Iterative Denoising</h3>
+    <p>
+        In this section, I finally used iterative denoising (diffusion) with step skipping to speed it up. Starting at step 990, 
+        steps of size 30 were taken until step 0, the original image, was obtained after starting from a noisy image. In this specific 
+        section, the iteration started from the tenth timestep to ensure the resulting image was close to the original. The equations 
+        used to find the predicted previous image at each step is shown below.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/iterativeprocess.png" alt="iterative process" class="wide">
+            <p>Iterative Process Equation</p>
+        </div>
+    </p>
+    <p>
+        This process was run on a noisy campanile image. The resulting images at every fifth timestep are shown below. The original 
+        image, resulting image, UNet result, and gaussian blur result are all also shown below.
+    </p>
+    <p>
+        <div class="five_column">
+            <img src="./mediaA/iterative_tensor(90).png" alt="iterative 90" class="standard">
+            <p>Iterative Prediction at Step 90</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/iterative_tensor(240).png" alt="iterative 240" class="standard">
+            <p>Iterative Prediction at Step 240</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/iterative_tensor(390).png" alt="iterative 390" class="standard">
+            <p>Iterative Prediction at Step 390</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/iterative_tensor(540).png" alt="iterative 540" class="standard">
+            <p>Iterative Prediction at Step 540</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/iterative_tensor(690).png" alt="iterative 690" class="standard">
+            <p>Iterative Prediction at Step 690</p>
+        </div>
+    </p>
+    <p>
+        <div class="four_column">
+            <img src="./mediaA/iterative_original.png" alt="noisy" class="standard">
+            <p>Noisy Image</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/iterative_result.png" alt="result" class="standard">
+            <p>Iterative Result</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/iterative_one_step.png" alt="one step" class="standard">
+            <p>One Step Result</p>
+        </div>
+        <div class="four_column">
+            <img src="./mediaA/iterative_blur.png" alt="gaussian blur" class="standard">
+            <p>Gaussian Blur Result</p>
+        </div>
+    </p>
+
+    <h3>5 | Diffusion Model Sampling</h3>
+    <p>
+        Instead of starting from the tenth timestep, this time the iterative process was started from the first one with 
+        a completely random image. This allowed for generation of completely new images, with the prompt used being "a high 
+        quality image" for the input to the model at each step.
+    </p>
+    <p>
+        <div class="five_column">
+            <img src="./mediaA/part_1.5_image_0.png" alt="random image 0" class="standard">
+            <p>Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.5_image_1.png" alt="random image 1" class="standard">
+            <p>Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.5_image_2.png" alt="random image 2" class="standard">
+            <p>Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.5_image_3.png" alt="random image 3" class="standard">
+            <p>Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.5_image_4.png" alt="random image 4" class="standard">
+            <p>Random Image 0</p>
+        </div>
+    </p>
+
+    <h3>6 | Classifier-Free Guidance (CFG)</h3>
+    <p>
+        To improve the images, classifier free guidance was added to the iterative denoiser by computing the 
+        estimated noise both conditioned on a text prompt and unconditional. The overall noise estimate is the unconditional estimate 
+        plus a scale factor multiplied by the difference between the estimation on a prompt and the unconditional estimate. Five 
+        examples the the result of this are shown below. A scale 
+        factor of 7 was used with the prompt being "a high quality photo" each time.
+    </p>
+    <p>
+        <div class="five_column">
+            <img src="./mediaA/part_1.6_image_0.png" alt="cfg random image 0" class="standard">
+            <p>CFG Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.6_image_1.png" alt="cfg random image 1" class="standard">
+            <p>CFG Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.6_image_2.png" alt="cfg random image 2" class="standard">
+            <p>CFG Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.6_image_3.png" alt="cfg random image 3" class="standard">
+            <p>CFG Random Image 0</p>
+        </div>
+        <div class="five_column">
+            <img src="./mediaA/part_1.6_image_4.png" alt="cfg random image 4" class="standard">
+            <p>CFG Random Image 0</p>
+        </div>
+    </p>
+
+    <h3>7 | Image-to-Image Translation</h3>
+    <p>
+        Noise was added to images in varying amounts up to certain timesteps before running the CFG iterative denoising 
+        function on them to see what results would occur from denoising at certain points. This was done on three images; the campanile, 
+        a picture of a mug with cal on it, and a picture of a plushy. These results are shown below.
+    </p>
+    <p>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_1.png" alt="campanile1" class="standard">
+            <p>Campanile 1</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_3.png" alt="campanile3" class="standard">
+            <p>Campanile 3</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_5.png" alt="campanile5" class="standard">
+            <p>Campanile 5</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_7.png" alt="campanile7" class="standard">
+            <p>Campanile 7</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_10.png" alt="campanile10" class="standard">
+            <p>Campanile 10</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_campanile_20.png" alt="campanile20" class="standard">
+            <p>Campanile 20</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/campanile_64.jpg" alt="campanile64" class="standard">
+            <p>Campanile Original</p>
+        </div>
+    </p>
+    <p>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_1.png" alt="calmug1" class="standard">
+            <p>Cal Mug 1</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_3.png" alt="calmug3" class="standard">
+            <p>Cal Mug 3</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_5.png" alt="calmug5" class="standard">
+            <p>Cal Mug 5</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_7.png" alt="calmug7" class="standard">
+            <p>Cal Mug 7</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_10.png" alt="calmug10" class="standard">
+            <p>Cal Mug 10</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_calmug_20.png" alt="calmug20" class="standard">
+            <p>Cal Mug 20</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/calmug_64.jpg" alt="calmug64" class="standard">
+            <p>Cal Mug Original</p>
+        </div>
+    </p>
+    <p>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_1.png" alt="plushy1" class="standard">
+            <p>Plushy 1</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_3.png" alt="plushy3" class="standard">
+            <p>Plushy 3</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_5.png" alt="plushy5" class="standard">
+            <p>Plushy 5</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_7.png" alt="plushy7" class="standard">
+            <p>Plushy 7</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_10.png" alt="plushy10" class="standard">
+            <p>Plushy 10</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/part_1.7_plushy_20.png" alt="plushy20" class="standard">
+            <p>Plushy 20</p>
+        </div>
+        <div class="seven_column">
+            <img src="./mediaA/plushy_64.jpg" alt="plushy64" class="standard">
+            <p>Plushy Original</p>
+        </div>
+    </p>
+
+    <h4>7.1 | Editing Hand-Drawn and Web Images</h4>
+    <p>
+        The same process as the previous part was done in this part, except this time it was done on one image obtained from the 
+        web and two very simple badly done/very vague drawn images. The first drawn image was kinda meant to be a sailboat metal 
+        battleship and the second was supposed to be a starry sky. The web image is from 
+        <a href="https://www.brickvault.toys/cdn/shop/products/Y-wing_79a92a3d-8997-47d0-8d00-bbf73b783c3b_1050x1050.jpg">here</a>.
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./mediaA/lego_y_wing64.jpg" alt="web image" class="standard">
+            <p>Web Image</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/1.7.1drawn_image_1.png" alt="drawn image 1" class="standard">
+            <p>Drawn Image 1</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/1.7.1drawn_image_2.png" alt="drawn image 2" class="standard">
+            <p>Drawn Image 2</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1.7.1web_image_results.png" alt="web image results" class="standard">
+            <p>Web Image Results</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1.7.1drawn_image_1_results.png" alt="drawn image 1 results" class="standard">
+            <p>Drawn Image 1 Results</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1.7.1drawn_image_2_results.png" alt="drawn image 2 results" class="standard">
+            <p>Drawn Image 2 Results</p>
+        </div>
+    </p>
+
+    <h4>7.2 | Inpainting</h4>
+    <p>
+        By forcing the image at each step to have the forward prediction from the original image at all points that are not 
+        the mask, inpainting can be done, where only a select portion of the image develops a random result based on the image and the rest remain 
+        the original image. This is shown below on the campanile, mug, and plushy. The campanile ends up with a new 
+        top, the mug ends phased out of the image (a bit badly), and the plushy gets a nose.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/inpaintprocess.png" alt="inpaint process" class="standard">
+            <p>Inpainting Process</p>
+        </div>
+    </p>
+    <p>
+        <div class="three_column">
+            <img src="./mediaA/part_1.7.2_campanile.png" alt="1.7.2 campanile" class="standard">
+            <p>Inpainted Campanile</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/part_1.7.2_calmug.png" alt="1.7.2 calmug" class="standard">
+            <p>Inpainted Mug</p>
+        </div>
+        <div class="three_column">
+            <img src="./mediaA/part_1.7.2_plushy.png" alt="1.7.2 plushy" class="standard">
+            <p>Inpainted Plushy</p>
+        </div>
+    </p>
+
+    <h4>7.3 | Text-Conditional Image-to-Image Translation</h4>
+    <p>
+        This runs the same thing as the first part of 7, but it runs guided by a prompt instead of nothing. This allows for 
+        interesting changes as the model attempts to obtain an image based on the prompt from the original image to 
+        varying extents as shown below on different stages of added noise on the campanile, mug, and plushy.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1_7_3_campanile.png" alt="1_7_3_campanile" class="standard">
+            <p>Prompt Based Translation from Campanile, Starting from Forwarding to Different Timesteps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1_7_3_calmug.png" alt="1_7_3_calmug.png" class="standard">
+            <p>Prompt Based Translation from Mug, Starting from Forwarding to Different Timesteps</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/1_7_3_plushy.png" alt="1_7_3_plushy" class="standard">
+            <p>Prompt Based Translation from Plushy, Starting from Forwarding to Different Timesteps</p>
+        </div>
+    </p>
+
+    <h3>8 | Visual Anagrams</h3>
+    <p>
+        In this section, anagrams from two different prompts were developed. The noise from transforming an image from one prompt 
+        and the noise from transforming the flipped image from another promt were averaged for a combined transformation at each 
+        step until the final result appears to be one image right side up and another image upside down. This is shown below.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.8_image_1.png" alt="1_8_image_1" class="small">
+            <p>"an oil painting of people around a campfire" and "an oil painting of an old man"</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.8_image_1.png" alt="1_8_image_1" class="small">
+            <p>"an oil painting of people around a campfire" and "an oil painting of an old man"</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.8_image_2.png" alt="1_8_image_2" class="small">
+            <p>"an oil painting of a snowy mountain village" and "a photo of the amalfi cost"</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.8_image_3.png" alt="1_8_image_3" class="small">
+            <p>"a rocket ship" and "a lithograph of waterfalls"</p>
+        </div>
+    </p>
+
+    <h3>9 | Hybrid Images</h3>
+    <p>
+        In this section, the low frequencies of the noise from running the model on the current step on one prompt and the high 
+        frequencies from running the model on the current step on another prompt were combined to form an overall noise to remove, 
+        which eventually reaches a hybrid image after all the iterations. A kernel size of 33 and a sigma of 2 was used. The results 
+        are shown below.
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.9_image_1.png" alt="1_9_image_1" class="small">
+            <p>"a lithograph of a skull" and "a lithograph of waterfalls"</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.9_image_2.png" alt="1_9_image_2" class="small">
+            <p>"a photo of the amalfi cost" and "a puffy cloud</p>
+        </div>
+    </p>
+    <p>
+        <div class="one_column">
+            <img src="./mediaA/part_1.9_image_3.png" alt="1_9_image_3" class="small">
+            <p>"a space battleship" and "a chalk drawing of a skyscraper"</p>
+        </div>
+    </p>
+    <p></p>
+    <h2>Part B: Diffusion Models from Scratch!</h2>
+    <p>
+        The purpose of project 5A is to get familiar with the usage of diffusion models by 
+        implementing diffusion sampling loops and using them for other tasks such as inpainting and creating optical illusions. 
+        This was done using the DeepFloydIF diffusion model. Before each time results were obtained, a seed was set. This part was 
+        done in Colab.
+    </p>
