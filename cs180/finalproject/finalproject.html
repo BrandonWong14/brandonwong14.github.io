@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>CS 180 Project 5</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            max-width: 1000px;
+        }
+        .tall_one_column {
+            float: left;
+            width: 100%;
+            height: 600;
+        }
+        .tall_two_column {
+            float: left;
+            width: 50%;
+            height: 420px;
+        }
+        .short_one_column {
+            float: left;
+            width: 100%;
+            height: 250px;
+        }
+        .short_two_column {
+            float: left;
+            width: 50%;
+            height: 250;
+        }
+        .one_column {
+            float: left;
+            width: 100%;
+            height: 270px;
+        }
+        .two_column {
+            float: left;
+            width: 50%;
+            height: 360px;
+        }
+        .three_column {
+            float: left;
+            width: 33.3%;
+            height: 360px;
+        }
+        .four_column {
+            float: left;
+            width: 25%;
+            height: 300px;
+        }
+        .five_column {
+            float: left;
+            width: 20%;
+        }
+        .six_column {
+            float: left;
+            width: 16.6%;
+        }
+        .seven_column {
+            float: left;
+            width: 14.28%;
+        }
+        .eight_column {
+            float: left;
+            width: 12.5%;
+        }
+        .large {
+            width: 300px;
+        }
+        .medium {
+            width: 240px;
+        }
+        .small {
+            width: 180px;
+        }
+        .tiny {
+            width: 140px;
+        }
+        .wide {
+            width: 500px;
+        }
+        .standard {
+            width: 95%;
+        }
+    </style>
+</head>
+<body>
+    <h1>CS 180 Final Project</h1>
+    <p>Name: Brandon Wong</p>
+    <h2>Section 1: Poor Man's Augmented Reality</h2>
+    <p>
+        In this section I projected a 3d cube onto a short video by identifying keypoints to track throughout the video to define a 
+        world space that could be used to figure out where the cube should be in each frome in the image space.
+    </p>
+
+    <h3>0 | Setup</h3>
+    <p>
+        For the setup, I just took a 30 second video of a shoebox with a grid on it so that keypoints could be identified and tracked 
+        on it.
+    </p>
+    <p>
+        <div class="tall_one_column">
+            <video src="./media/box.mov" alt="box video" class="wide" controls autoplay muted>
+                <source src="./media/box.mov" type="video/mov">
+            </video>
+            <p>Original Video</p>
+        </div>
+    </p>
+
+    <h3>1 | Keypoints</h3>
+    <p>
+        After taking the video, I selected keypoints in the first frame of the video based on the marked grid I made on the box plus the 
+        corners. Once the image space coordinates and their respective world coordinates based on a 3d world space with the origin, (0, 0, 0) being 
+        at the bottom left corner of the papaer, were selected, a medianflow tracker was used for each point in the image space to find 
+        each point in the next frame's image space, allowing the points coordinates in each frame to be found and saved. The coordinates for 
+        points 7, 17, 19, 30, 33, 35 were found to be innacurate, so they were left out leaving 30 points to find the conversion matrix between 
+        world space and image space for.
+    </p>
+    <p>
+        <div class="tall_one_column">
+            <video src="./media/box_with_points.mp4" alt="box with points video" class="wide" controls autoplay muted>
+                <source src="./media/box_with_points.mp4" type="video/mp4">
+            </video>
+            <p>Box with Points Video</p>
+        </div>
+    </p>
