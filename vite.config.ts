@@ -9,6 +9,7 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  base: "https://brandonwong14.github.io/",
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
